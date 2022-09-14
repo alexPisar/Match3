@@ -65,7 +65,7 @@ namespace Match3
 
             set
             {
-                if(value == true && !_lineBonus)
+                if(value && !_lineBonus)
                     pictureBox1.Paint += new PaintEventHandler(pictureBox1_Paint);
 
                 _bombBonus = value;
