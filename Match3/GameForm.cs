@@ -145,17 +145,7 @@ namespace Match3
 
                 GetAllDeletedWithBonusesSquares(deletedPositions);
 
-                foreach(var n in _newLineBonuses)
-                {
-                    if (deletedPositions.Contains(n))
-                        deletedPositions.Remove(n);
-                }
-
-                foreach (var n in _newBombBonuses)
-                {
-                    if (deletedPositions.Contains(n))
-                        deletedPositions.Remove(n);
-                }
+                deletedPositions = deletedPositions.Where(p => (!_newBombBonuses.Exists(b => b.Row == p.Row && b.Column == p.Column)) && (!_newLineBonuses.Exists(l => l.Row == p.Row && l.Column == p.Column))).ToList();
 
                 _numberOfPoints = _numberOfPoints + deletedPositions.Count;
 
@@ -165,6 +155,9 @@ namespace Match3
                 }
                 else
                 {
+                    panel1.Enabled = false;
+                    SetEnableStateForSquares(false);
+
                     var columnGroupsDeletedPositions = from d in deletedPositions
                                                        group d by d.Column;
 
@@ -174,6 +167,9 @@ namespace Match3
                         MoveDownElementsInColumn(group);
 
                     DoWhileExistsThreeSquaresLines();
+
+                    panel1.Enabled = true;
+                    SetEnableStateForSquares(true);
                 }
             }
 
@@ -184,6 +180,17 @@ namespace Match3
             }
 
             label2.Text = Convert.ToString(_numberOfPoints);
+        }
+
+        private void SetEnableStateForSquares(bool enableValue)
+        {
+            for(int i = 0; i < 8; i++)
+            {
+                for(int j = 0; j < 8; j++)
+                {
+                    _squares[i, j].Enabled = enableValue;
+                }
+            }
         }
 
         private void ChangePlacesTwoSquarePositions(SquarePosition position1, SquarePosition position2)
@@ -393,12 +400,14 @@ namespace Match3
             {
                 position.SquareControl.SetLineBonusOrientation(LineBonusOrientation.Horizontal);
                 _newLineBonuses.Add(position);
+                _numberOfPoints++;
             }
 
-            if (squares.Count == 4 && !_newBombBonuses.Exists(n => squares.Exists(sq => sq.Row == n.Row && sq.Column == n.Column)) && !position.SquareControl.BombBonus)
+            if (squares.Count >= 4 && !_newBombBonuses.Exists(n => squares.Exists(sq => sq.Row == n.Row && sq.Column == n.Column)) && !position.SquareControl.BombBonus)
             {
                 position.SquareControl.BombBonus = true;
                 _newBombBonuses.Add(position);
+                _numberOfPoints++;
             }
 
             int horizontalPositionCount = squares.Count;
@@ -452,18 +461,21 @@ namespace Match3
             {
                 position.SquareControl.SetLineBonusOrientation(LineBonusOrientation.Vertiсal);
                 _newLineBonuses.Add(position);
+                _numberOfPoints++;
             }
 
-            if (verticalPositionCount == 4 && !existsInVertikalPositionBombBonus && !position.SquareControl.BombBonus)
+            if (verticalPositionCount >= 4 && !existsInVertikalPositionBombBonus && !position.SquareControl.BombBonus)
             {
                 position.SquareControl.BombBonus = true;
                 _newBombBonuses.Add(position);
+                _numberOfPoints++;
             }
 
-            if (horizontalPositionCount > 2 && verticalPositionCount > 2 && !position.SquareControl.BombBonus)
+            if (horizontalPositionCount >= 2 && verticalPositionCount >= 2 && !position.SquareControl.BombBonus)
             {
                 position.SquareControl.BombBonus = true;
                 _newBombBonuses.Add(position);
+                _numberOfPoints++;
             }
 
             if (squares.Count != 0 && !_newLineBonuses.Contains(position) && !_newBombBonuses.Contains(position))
@@ -522,6 +534,7 @@ namespace Match3
                     _squares[0, elements.Key].Size = new Size(_squareSize, _squareSize);
                     _squares[0, elements.Key].SetSelectedSquarePanels += SetSelectedSquarePanel;
                     _squares[0, elements.Key].Visible = true;
+                    _squares[0, elements.Key].Enabled = false;
                     panel1.Controls.Add(_squares[0, elements.Key]);
                     panel1.Refresh();
 
@@ -756,10 +769,33 @@ namespace Match3
 
             bombSquare.SquareControl.SetSquarePicture(Match3.Properties.Resources.Burst);
             bombSquare.SquareControl.Refresh();
+
+            var findSquareInNewBonuses = _newBombBonuses.FirstOrDefault(n => n.Row == bombSquare.Row && n.Column == bombSquare.Column);
+
+            if (findSquareInNewBonuses != null)
+                _newBombBonuses.Remove(findSquareInNewBonuses);
+
+            findSquareInNewBonuses = _newLineBonuses.FirstOrDefault(n => n.Row == bombSquare.Row && n.Column == bombSquare.Column);
+
+            if (findSquareInNewBonuses != null)
+                _newLineBonuses.Remove(findSquareInNewBonuses);
+
             Thread.Sleep(250);
 
             foreach (var p in positions)
+            {
                 p.SquareControl.SetSquarePicture(Match3.Properties.Resources.Burst);
+
+                var f = _newBombBonuses.FirstOrDefault(n => n.Row == p.Row && n.Column == p.Column);
+
+                if (f != null)
+                    _newBombBonuses.Remove(f);
+
+                f = _newLineBonuses.FirstOrDefault(n => n.Row == p.Row && n.Column == p.Column);
+
+                if (f != null)
+                    _newLineBonuses.Remove(f);
+            }
 
             positions.Add(bombSquare);
 
