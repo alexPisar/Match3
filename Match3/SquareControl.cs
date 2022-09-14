@@ -40,21 +40,9 @@ namespace Match3
             }
         }
 
-        public bool LineBonus
-        {
-            get
-            {
-                return _lineBonus;
-            }
-        }
+        public bool LineBonus => _lineBonus;
 
-        public LineBonusOrientation LineBonusOrientation
-        {
-            get
-            {
-                return _lineBonusOrientation;
-            }
-        }
+        public LineBonusOrientation LineBonusOrientation => _lineBonusOrientation;
 
         public bool BombBonus
         {
