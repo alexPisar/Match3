@@ -14,9 +14,8 @@ namespace Match3
     public partial class GameForm : Form
     {
         private SquarePosition _currentPosition;
-        private int _squareSize = 64;
         private int _numberOfPoints;
-        private SquareControl[,] _squares = new SquareControl[8, 8];
+        private SquareControl[,] _squares = new SquareControl[Constants.GetInstance().PlayingFieldHeight, Constants.GetInstance().PlayingFieldWidth];
         private System.Windows.Forms.Timer GameTime;
         private int _remainingSeconds;
         private List<SquarePosition> _newLineBonuses;
@@ -38,8 +37,8 @@ namespace Match3
         {
             Random rnd = new Random();
 
-            for (int i = 0; i < 8; i++)
-                for (int j = 0; j < 8; j++)
+            for (int i = 0; i < Constants.GetInstance().PlayingFieldHeight; i++)
+                for (int j = 0; j < Constants.GetInstance().PlayingFieldWidth; j++)
                 {
                     SquareControl square;
 
@@ -77,14 +76,14 @@ namespace Match3
                     }
 
                     square.Dock = DockStyle.None;
-                    square.Size = new Size(_squareSize, _squareSize);
+                    square.Size = new Size(Constants.GetInstance().SquareSideSize, Constants.GetInstance().SquareSideSize);
 
                     square.SetSelectedSquarePanels += SetSelectedSquarePanel;
 
                     _squares[i, j] = square;
                     panel1.Controls.Add(square);
 
-                    square.Location = new Point(j * 64, i * 64);
+                    square.Location = new Point(j * Constants.GetInstance().SquareSideSize, i * Constants.GetInstance().SquareSideSize);
                 }
 
             //Квадраты заполнили - и можно игру начать
@@ -115,8 +114,8 @@ namespace Match3
 
         private void SetSelectedSquarePanel(object s, EventArgs args)
         {
-            for (int indx = 0; indx < 8; indx++)
-                for (int jndx = 0; jndx < 8; jndx++)
+            for (int indx = 0; indx < Constants.GetInstance().PlayingFieldHeight; indx++)
+                for (int jndx = 0; jndx < Constants.GetInstance().PlayingFieldWidth; jndx++)
                 {
                     var sq = _squares[indx, jndx];
                     sq.IsSelectedSquare = false;
@@ -184,9 +183,9 @@ namespace Match3
 
         private void SetEnableStateForSquares(bool enableValue)
         {
-            for(int i = 0; i < 8; i++)
+            for(int i = 0; i < Constants.GetInstance().PlayingFieldHeight; i++)
             {
-                for(int j = 0; j < 8; j++)
+                for(int j = 0; j < Constants.GetInstance().PlayingFieldWidth; j++)
                 {
                     _squares[i, j].Enabled = enableValue;
                 }
@@ -531,7 +530,7 @@ namespace Match3
                     _squares[0, elements.Key] = GetSquareControlByNumber(value);
 
                     _squares[0, elements.Key].Location = new Point(elements.Key * 64, -64);
-                    _squares[0, elements.Key].Size = new Size(_squareSize, _squareSize);
+                    _squares[0, elements.Key].Size = new Size(Constants.GetInstance().SquareSideSize, Constants.GetInstance().SquareSideSize);
                     _squares[0, elements.Key].SetSelectedSquarePanels += SetSelectedSquarePanel;
                     _squares[0, elements.Key].Visible = true;
                     _squares[0, elements.Key].Enabled = false;
@@ -578,7 +577,7 @@ namespace Match3
                     {
                         _squares[row, i] = GetSquareControlByNumber((int)movedSquareControl.SquareType - 1);
                         _squares[row, i].Location = new Point(i * 64, row * 64);
-                        _squares[row, i].Size = new Size(_squareSize, _squareSize);
+                        _squares[row, i].Size = new Size(Constants.GetInstance().SquareSideSize, Constants.GetInstance().SquareSideSize);
                         _squares[row, i].SetSelectedSquarePanels += SetSelectedSquarePanel;
                         _squares[row, i].Visible = true;
                         panel1.Controls.Add(_squares[row, i]);
@@ -588,7 +587,7 @@ namespace Match3
                     {
                         _squares[i, column] = GetSquareControlByNumber((int)movedSquareControl.SquareType - 1);
                         _squares[i, column].Location = new Point(column * 64, i * 64);
-                        _squares[i, column].Size = new Size(_squareSize, _squareSize);
+                        _squares[i, column].Size = new Size(Constants.GetInstance().SquareSideSize, Constants.GetInstance().SquareSideSize);
                         _squares[i, column].SetSelectedSquarePanels += SetSelectedSquarePanel;
                         _squares[i, column].Visible = true;
                         panel1.Controls.Add(_squares[i, column]);

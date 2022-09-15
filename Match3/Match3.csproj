@@ -48,6 +48,7 @@
     <Compile Include="CircleSquareControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Constants.cs" />
     <Compile Include="GameForm.cs">
       <SubType>Form</SubType>
     </Compile>
