@@ -676,7 +676,14 @@ namespace Match3
             {
                 SquareControl square = null;
 
-                for (int i = 0; i < 8; i++)
+                int size = 0;
+
+                if (d.SquareControl.LineBonusOrientation == LineBonusOrientation.Horizontal)
+                    size = Constants.GetInstance().PlayingFieldWidth;
+                else if (d.SquareControl.LineBonusOrientation == LineBonusOrientation.Vertiсal)
+                    size = Constants.GetInstance().PlayingFieldHeight;
+
+                for (int i = 0; i < size; i++)
                 {
                     if (d.SquareControl.LineBonusOrientation == LineBonusOrientation.Horizontal)
                         square = _squares[d.Row, i];
@@ -745,24 +752,24 @@ namespace Match3
 
                 positions.Add(_squares[bombSquare.Row, bombSquare.Column - 1].Position);
 
-                if (bombSquare.Row < 7)
+                if (bombSquare.Row < Constants.GetInstance().PlayingFieldHeight - 1)
                     positions.Add(_squares[bombSquare.Row + 1, bombSquare.Column - 1].Position);
             }
 
             if (bombSquare.Row > 0)
                 positions.Add(_squares[bombSquare.Row - 1, bombSquare.Column].Position);
 
-            if (bombSquare.Row < 7)
+            if (bombSquare.Row < Constants.GetInstance().PlayingFieldHeight - 1)
                 positions.Add(_squares[bombSquare.Row + 1, bombSquare.Column].Position);
 
-            if (bombSquare.Column < 7)
+            if (bombSquare.Column < Constants.GetInstance().PlayingFieldWidth - 1)
             {
                 if (bombSquare.Row > 0)
                     positions.Add(_squares[bombSquare.Row - 1, bombSquare.Column + 1].Position);
 
                 positions.Add(_squares[bombSquare.Row, bombSquare.Column + 1].Position);
 
-                if (bombSquare.Row < 7)
+                if (bombSquare.Row < Constants.GetInstance().PlayingFieldHeight - 1)
                     positions.Add(_squares[bombSquare.Row + 1, bombSquare.Column + 1].Position);
             }
 
