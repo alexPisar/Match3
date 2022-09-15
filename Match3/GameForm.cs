@@ -199,7 +199,7 @@ namespace Match3
 
             if (Math.Abs(position1.Row - position2.Row) == 1 && position1.Column == position2.Column)
             {
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < Constants.GetInstance().SquareSideSize / 8; i++)
                 {
                     if (position1.Row > position2.Row)
                     {
@@ -217,7 +217,7 @@ namespace Match3
             }
             else if (Math.Abs(position1.Column - position2.Column) == 1 && position1.Row == position2.Row)
             {
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < Constants.GetInstance().SquareSideSize / 8; i++)
                 {
                     if (position1.Column > position2.Column)
                     {
@@ -309,7 +309,7 @@ namespace Match3
                 return position.SquareControl.SquareType == s1.SquareType && position.SquareControl.SquareType == s2.SquareType;
             };
 
-            if (position.Column > 0 && position.Column < 7)
+            if (position.Column > 0 && position.Column < Constants.GetInstance().PlayingFieldWidth - 1)
             {
                 if(EqualityInColumn(position.Column - 1, position.Column + 1))
                 {
@@ -326,7 +326,7 @@ namespace Match3
                 }
             }
 
-            if (position.Column < 6)
+            if (position.Column < Constants.GetInstance().PlayingFieldWidth - 2)
             {
                 if (EqualityInColumn(position.Column + 1, position.Column + 2))
                 {
@@ -334,7 +334,7 @@ namespace Match3
                 }
             }
 
-            if (position.Row > 0 && position.Row < 7)
+            if (position.Row > 0 && position.Row < Constants.GetInstance().PlayingFieldHeight - 1)
             {
                 if (EqualityInRow(position.Row - 1, position.Row + 1))
                 {
@@ -351,7 +351,7 @@ namespace Match3
                 }
             }
 
-            if (position.Row < 6)
+            if (position.Row < Constants.GetInstance().PlayingFieldHeight - 2)
             {
                 if (EqualityInRow(position.Row + 1, position.Row + 2))
                 {
@@ -388,7 +388,7 @@ namespace Match3
 
                     c++;
 
-                    if (c > 7)
+                    if (c > Constants.GetInstance().PlayingFieldWidth - 1)
                         break;
 
                     s = _squares[position.Row, c];
@@ -449,7 +449,7 @@ namespace Match3
                     existsInVertikalPositionBombBonus = existsInVertikalPositionBombBonus || _newBombBonuses.Exists(n => n.Row == s.Position.Row && n.Column == s.Position.Column);
                     c++;
 
-                    if (c > 7)
+                    if (c > Constants.GetInstance().PlayingFieldHeight - 1)
                         break;
 
                     s = _squares[c, position.Column];
