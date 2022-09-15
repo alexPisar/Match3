@@ -529,7 +529,7 @@ namespace Match3
 
                     _squares[0, elements.Key] = GetSquareControlByNumber(value);
 
-                    _squares[0, elements.Key].Location = new Point(elements.Key * 64, -64);
+                    _squares[0, elements.Key].Location = new Point(elements.Key * Constants.GetInstance().SquareSideSize, -Constants.GetInstance().SquareSideSize);
                     _squares[0, elements.Key].Size = new Size(Constants.GetInstance().SquareSideSize, Constants.GetInstance().SquareSideSize);
                     _squares[0, elements.Key].SetSelectedSquarePanels += SetSelectedSquarePanel;
                     _squares[0, elements.Key].Visible = true;
@@ -553,7 +553,7 @@ namespace Match3
             panel1.Refresh();
             int i = 0;
 
-            while (i < 8)
+            while (i < Constants.GetInstance().SquareSideSize / 8)
             {
                 movedSquare.Location = new Point(movedSquare.Location.X, movedSquare.Location.Y + 8);
                 Thread.Sleep(25);
@@ -571,22 +571,25 @@ namespace Match3
 
             if(movedSquareControl.Position.Row != row || movedSquareControl.Position.Column != column)
             {
-                for(int i = 0; i < 8; i++)
+                for (int i = 0; i < Constants.GetInstance().PlayingFieldWidth; i++)
                 {
-                    if(_squares[row, i] == movedSquareControl)
+                    if (_squares[row, i] == movedSquareControl)
                     {
                         _squares[row, i] = GetSquareControlByNumber((int)movedSquareControl.SquareType - 1);
-                        _squares[row, i].Location = new Point(i * 64, row * 64);
+                        _squares[row, i].Location = new Point(i * Constants.GetInstance().SquareSideSize, row * Constants.GetInstance().SquareSideSize);
                         _squares[row, i].Size = new Size(Constants.GetInstance().SquareSideSize, Constants.GetInstance().SquareSideSize);
                         _squares[row, i].SetSelectedSquarePanels += SetSelectedSquarePanel;
                         _squares[row, i].Visible = true;
                         panel1.Controls.Add(_squares[row, i]);
                     }
+                }
 
-                    if(_squares[i, column] == movedSquareControl)
+                for (int i = 0; i < Constants.GetInstance().PlayingFieldHeight; i++)
+                {
+                    if (_squares[i, column] == movedSquareControl)
                     {
                         _squares[i, column] = GetSquareControlByNumber((int)movedSquareControl.SquareType - 1);
-                        _squares[i, column].Location = new Point(column * 64, i * 64);
+                        _squares[i, column].Location = new Point(column * Constants.GetInstance().SquareSideSize, i * Constants.GetInstance().SquareSideSize);
                         _squares[i, column].Size = new Size(Constants.GetInstance().SquareSideSize, Constants.GetInstance().SquareSideSize);
                         _squares[i, column].SetSelectedSquarePanels += SetSelectedSquarePanel;
                         _squares[i, column].Visible = true;
@@ -594,7 +597,7 @@ namespace Match3
                     }
                 }
 
-                movedSquareControl.Location = new Point(64 * column, 64 * row);
+                movedSquareControl.Location = new Point(Constants.GetInstance().SquareSideSize * column, Constants.GetInstance().SquareSideSize * row);
             }
 
             _squares[row, column] = movedSquareControl;
@@ -642,8 +645,8 @@ namespace Match3
         {
             List<SquarePosition> positions = new List<SquarePosition>();
 
-            for(int i = 0; i < 8; i++)
-                for(int j = 0; j < 8; j++)
+            for(int i = 0; i < Constants.GetInstance().PlayingFieldHeight; i++)
+                for(int j = 0; j < Constants.GetInstance().PlayingFieldWidth; j++)
                 {
                     var delSquares = GetDeletedSquaresWithPositions(_squares[i, j].Position).Where(s => !positions.Exists(p => s.Row == p.Row && s.Column == p.Column));
 
