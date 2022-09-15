@@ -34,8 +34,8 @@ namespace Match3
                 return new SquarePosition
                 {
                     SquareControl = this,
-                    Row = this.Location.Y / 64,
-                    Column = this.Location.X / 64
+                    Row = this.Location.Y / Constants.GetInstance().SquareSideSize,
+                    Column = this.Location.X / Constants.GetInstance().SquareSideSize
                 };
             }
         }
@@ -104,7 +104,10 @@ namespace Match3
             if (_lineBonus)
             {
                 Pen pen = new Pen(Color.Black, 3);
-                e.Graphics.DrawEllipse(pen, _lineBonusOrientation == LineBonusOrientation.Horizontal ? 2 : 32, _lineBonusOrientation == LineBonusOrientation.Horizontal ? 32 : 2, _lineBonusOrientation == LineBonusOrientation.Horizontal ? 60 : 10, _lineBonusOrientation == LineBonusOrientation.Horizontal ? 10 : 60);
+                e.Graphics.DrawEllipse(pen, _lineBonusOrientation == LineBonusOrientation.Horizontal ? Constants.GetInstance().SquareSideSize / 32 : Constants.GetInstance().SquareSideSize / 2, 
+                    _lineBonusOrientation == LineBonusOrientation.Horizontal ? Constants.GetInstance().SquareSideSize / 2 : Constants.GetInstance().SquareSideSize / 32, 
+                    _lineBonusOrientation == LineBonusOrientation.Horizontal ? Constants.GetInstance().SquareSideSize * 15 / 16 : Constants.GetInstance().SquareSideSize * 5 / 32, 
+                    _lineBonusOrientation == LineBonusOrientation.Horizontal ? Constants.GetInstance().SquareSideSize * 5 / 32 : Constants.GetInstance().SquareSideSize * 15 / 16);
             }
 
             if (_bombBonus)
