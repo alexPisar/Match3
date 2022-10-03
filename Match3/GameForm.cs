@@ -175,8 +175,7 @@ namespace Match3
                         tasks.Add(task);
                     }
 
-                    foreach (var task in tasks)
-                        await task;
+                    await Task.WhenAll(tasks);
 
                     await DoWhileExistsThreeSquaresLines();
 
@@ -655,8 +654,7 @@ namespace Match3
                     tasks.Add(task);
                 }
 
-                foreach (var task in tasks)
-                    await task;
+                await Task.WhenAll(tasks);
             }
             while (deletedSquares.Count > 0);
         }
