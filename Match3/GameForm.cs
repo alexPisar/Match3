@@ -93,11 +93,17 @@ namespace Match3
         private void TimeIsUp(object sender, EventArgs e)
         {
             minutesLabel.Text = "00";
-            _remainingSeconds--;
+
+            if(_remainingSeconds > 0)
+                _remainingSeconds--;
 
             if (_remainingSeconds == 0)
             {
                 SecundesLabel.Text = "00";
+
+                if (!panel1.Enabled)
+                    return;
+
                 GameTime.Stop();
 
                 var gameOverForm = new GameOverForm(_numberOfPoints);
@@ -112,7 +118,7 @@ namespace Match3
                 SecundesLabel.Text = _remainingSeconds < 10 ? "0" + Convert.ToString(_remainingSeconds) : Convert.ToString(_remainingSeconds);
         }
 
-        private void SetSelectedSquarePanel(object s, EventArgs args)
+        private async void SetSelectedSquarePanel(object s, EventArgs args)
         {
             for (int indx = 0; indx < Constants.GetInstance().PlayingFieldHeight; indx++)
                 for (int jndx = 0; jndx < Constants.GetInstance().PlayingFieldWidth; jndx++)
@@ -162,10 +168,17 @@ namespace Match3
 
                     DeleteSquareControlsOnPositions(deletedPositions);
 
+                    List<Task> tasks = new List<Task>();
                     foreach (var group in columnGroupsDeletedPositions)
-                        MoveDownElementsInColumn(group);
+                    {
+                        var task = MoveDownElementsInColumn(group);
+                        tasks.Add(task);
+                    }
 
-                    DoWhileExistsThreeSquaresLines();
+                    foreach (var task in tasks)
+                        await task;
+
+                    await DoWhileExistsThreeSquaresLines();
 
                     panel1.Enabled = true;
                     SetEnableStateForSquares(true);
@@ -483,7 +496,7 @@ namespace Match3
             return squares.Where(s => !_newLineBonuses.Contains(s) && !_newBombBonuses.Contains(s)).ToList();
         }
 
-        private void MoveDownElementsInColumn(IGrouping<int, SquarePosition> elements)
+        private async Task MoveDownElementsInColumn(IGrouping<int, SquarePosition> elements)
         {
             var rows = elements.Select(s => s.Row);
 
@@ -497,7 +510,7 @@ namespace Match3
                     if (_squares[i, elements.Key] != null)
                         continue;
 
-                    MoveDownSquareOnOnePosition(i, elements.Key);
+                    await MoveDownSquareOnOnePosition(i, elements.Key);
                 }
 
                 min--;
@@ -511,7 +524,7 @@ namespace Match3
                     if(i != max)
                     {
                         for(int j = i + 1; j < max + 1; j++)
-                            MoveDownSquareOnOnePosition(j, elements.Key);
+                            await MoveDownSquareOnOnePosition(j, elements.Key);
                     }
 
                     max--;
@@ -537,18 +550,18 @@ namespace Match3
                     panel1.Controls.Add(_squares[0, elements.Key]);
                     panel1.Refresh();
 
-                    MoveDownSquareOnOnePosition(_squares[0, elements.Key]);
+                    await MoveDownSquareOnOnePosition(_squares[0, elements.Key]);
 
                     if (i > 0)
                     {
                         for (int j = 0; j < i; j++)
-                            MoveDownSquareOnOnePosition(j + 1, elements.Key);
+                            await MoveDownSquareOnOnePosition(j + 1, elements.Key);
                     }
                 }
             }
         }
 
-        private void MoveDownSquareOnOnePosition(SquareControl movedSquare)
+        private async Task MoveDownSquareOnOnePosition(SquareControl movedSquare)
         {
             panel1.Refresh();
             int i = 0;
@@ -556,16 +569,16 @@ namespace Match3
             while (i < Constants.GetInstance().SquareSideSize / 8)
             {
                 movedSquare.Location = new Point(movedSquare.Location.X, movedSquare.Location.Y + 8);
-                Thread.Sleep(25);
+                await Task.Delay(25);
                 i++;
             }
         }
 
-        private void MoveDownSquareOnOnePosition(int row, int column)
+        private async Task MoveDownSquareOnOnePosition(int row, int column)
         {
             var movedSquareControl = _squares[row - 1, column];
 
-            MoveDownSquareOnOnePosition(movedSquareControl);
+            await MoveDownSquareOnOnePosition(movedSquareControl);
 
             _squares[row - 1, column] = null;
 
@@ -603,7 +616,7 @@ namespace Match3
             _squares[row, column] = movedSquareControl;
         }
 
-        private void DoWhileExistsThreeSquaresLines()
+        private async Task DoWhileExistsThreeSquaresLines()
         {
             List<SquarePosition> deletedSquares = new List<SquarePosition>();
 
@@ -635,8 +648,15 @@ namespace Match3
                 var columnGroups = from d in deletedSquares
                                    group d by d.Column;
 
+                List<Task> tasks = new List<Task>();
                 foreach (var group in columnGroups)
-                    MoveDownElementsInColumn(group);
+                {
+                    var task = MoveDownElementsInColumn(group);
+                    tasks.Add(task);
+                }
+
+                foreach (var task in tasks)
+                    await task;
             }
             while (deletedSquares.Count > 0);
         }
